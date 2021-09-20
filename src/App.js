@@ -15,7 +15,7 @@ const client = new ApolloClient({
 });
 
 // defining the query 
-const EXCHANGE_RATE = gql`
+const EXCHANGE_RATES = gql`
 query GetExchangeRates {
   rates(currency: "USD") {
     currency
@@ -26,14 +26,24 @@ query GetExchangeRates {
 
 //exchange rates component 
 const ExchangeRates = () => {
-  const { loading, error, data } = useQuery(EXCHANGE_RATE); // this is where we pass in the query 
+  const { loading, error, data } = useQuery(EXCHANGE_RATES);
 
-  // apollo tracks a queries state with loading and error props
-  if(loading) return <p>Loading...</p>;
-  if(error) return <p>Error</p>
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
 
-  // results returned back are attached to the data property 
-  return data.map(( { currency, rate }) => (
+    client
+    .query({
+      query: gql`
+        query GetRates {
+          rates(currency: "USD") {
+            currency
+          }
+        }
+      `
+    })
+    .then(result => console.log(result));
+
+  return data.rates.map(({ currency, rate }) => (
     <div key={currency}>
       <p>
         {currency}: {rate}
@@ -44,24 +54,10 @@ const ExchangeRates = () => {
 
 
 function App() {
-  
-    // testing out calls to API
-  // client
-  // .query({
-  //   query: gql`
-  //     query GetRates {
-  //       rates(currency: "USD") {
-  //         currency
-  //       }
-  //     }
-  //   `
-  // })
-  // .then(result => console.log(result));
-
   return (
     <div className="App">
       <h1> My first Apollo app 🚀</h1>
-      
+      <ExchangeRates />
       
     </div>
   );

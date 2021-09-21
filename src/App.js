@@ -14,51 +14,36 @@ const client = new ApolloClient({
   cache: new InMemoryCache() // client uses to cache query results after fetching them 
 });
 
-// defining the query 
-const EXCHANGE_RATES = gql`
-query GetExchangeRates {
-  rates(currency: "USD") {
-    currency
-    rate
+// get dogs graphql queries 
+const GET_DOGS = gql`
+query GetDogs {
+  dogs {
+    id
+    breed
   }
 }
 `;
 
-//exchange rates component 
-const ExchangeRates = () => {
-  const { loading, error, data } = useQuery(EXCHANGE_RATES);
+// new dog component
+const Dogs = ({ onDogSelected }) => {
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
+  const { loading, error, data } = useQuery()
 
-    client
-    .query({
-      query: gql`
-        query GetRates {
-          rates(currency: "USD") {
-            currency
-          }
-        }
-      `
-    })
-    .then(result => console.log(result));
+  if(loading) return "Loading...";
+  if(error) return `Error! ${error.message}`;
 
-  return data.rates.map(({ currency, rate }) => (
-    <div key={currency}>
-      <p>
-        {currency}: {rate}
-      </p>
-    </div>
-  ));
+
+
 }
+
+
+
 
 
 function App() {
   return (
     <div className="App">
-      <h1> My first Apollo app 🚀</h1>
-      <ExchangeRates />
-      
+      <h1> My first Apollo app 🚀</h1>   
     </div>
   );
 }
